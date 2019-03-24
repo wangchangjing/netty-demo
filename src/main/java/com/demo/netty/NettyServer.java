@@ -2,12 +2,13 @@ package com.demo.netty;
 
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.channel.ChannelInitializer;
-import io.netty.channel.SimpleChannelInboundHandler;
+import io.netty.channel.ChannelOption;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
-import io.netty.handler.codec.string.StringDecoder;
+import io.netty.util.AttributeKey;
 
 /**
  * @Description:
@@ -16,27 +17,47 @@ import io.netty.handler.codec.string.StringDecoder;
  * @Date 2019/3/1
  */
 public class NettyServer {
-    public static void main(String[] args) {
-        ServerBootstrap serverBootstrap = new ServerBootstrap();
 
-        NioEventLoopGroup boss = new NioEventLoopGroup(); // 对应 IOServer.java 中的接受新连接线程，主要负责创建新连接
-        NioEventLoopGroup worker = new NioEventLoopGroup(); // 对应 IOServer.java 中的负责读取数据的线程，主要用于读取数据以及业务逻辑处理
+    private static final int BEGIN_PORT = 8000;
+
+    public static void main(String[] args) {
+        NioEventLoopGroup boosGroup = new NioEventLoopGroup();
+        NioEventLoopGroup workerGroup = new NioEventLoopGroup();
+
+        final ServerBootstrap serverBootstrap = new ServerBootstrap();
+        final AttributeKey<Object> clientKey = AttributeKey.newInstance("clientKey");
         serverBootstrap
-                .group(boss, worker)
+                .group(boosGroup, workerGroup)
                 .channel(NioServerSocketChannel.class)
-                .childHandler(new ChannelInitializer<NioSocketChannel>() {
-                    protected void initChannel(NioSocketChannel ch) {
-                        ch.pipeline().addLast(new StringDecoder());
-                        ch.pipeline().addLast(new SimpleChannelInboundHandler<String>() {
-                            @Override
-                            protected void channelRead0(ChannelHandlerContext ctx, String msg) {
-                                System.out.println(msg);
-                            }
-                        });
+                .handler(new ChannelInboundHandlerAdapter() {
+                    @Override
+                    public void channelActive(ChannelHandlerContext ctx) throws Exception {
+                        super.channelActive(ctx);
                     }
                 })
-                .bind(8000);
+                .attr(AttributeKey.newInstance("serverName"), "nettyServer")
+                .childAttr(clientKey, "clientValue")
+                .option(ChannelOption.SO_BACKLOG, 1024)
+                .childOption(ChannelOption.SO_KEEPALIVE, true)
+                .childOption(ChannelOption.TCP_NODELAY, true)
+                .childHandler(new ChannelInitializer<NioSocketChannel>() {
+                    protected void initChannel(NioSocketChannel ch) {
+                        System.out.println(ch.attr(clientKey).get());
+                    }
+                });
+
+
+        bind(serverBootstrap, BEGIN_PORT);
+    }
+
+    private static void bind(final ServerBootstrap serverBootstrap, final int port) {
+        serverBootstrap.bind(port).addListener(future -> {
+            if (future.isSuccess()) {
+                System.out.println("端口[" + port + "]绑定成功!");
+            } else {
+                System.err.println("端口[" + port + "]绑定失败!");
+                bind(serverBootstrap, port + 1);
+            }
+        });
     }
 }
-
-
