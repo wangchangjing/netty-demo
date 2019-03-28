@@ -1,5 +1,7 @@
-package com.demo.netty.protocol.command;
+package com.demo.netty.protocol;
 
+import com.demo.netty.protocol.request.LoginRequestPacket;
+import com.demo.netty.protocol.response.LoginResponsePacket;
 import com.demo.netty.serialize.Serializer;
 import com.demo.netty.serialize.impl.JSONSerializer;
 import io.netty.buffer.ByteBuf;
@@ -9,6 +11,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static com.demo.netty.protocol.command.Command.LOGIN_REQUEST;
+import static com.demo.netty.protocol.command.Command.LOGIN_RESPONSE;
 
 /**
  * @author WangChangJing
@@ -18,12 +21,16 @@ import static com.demo.netty.protocol.command.Command.LOGIN_REQUEST;
 public class PacketCodeC {
 
     private static final int MAGIC_NUMBER = 0x12345678;
-    private static final Map<Byte, Class<? extends Packet>> packetTypeMap;
-    private static final Map<Byte, Serializer> serializerMap;
+    public static final PacketCodeC INSTANCE = new PacketCodeC();
 
-    static {
+    private final Map<Byte, Class<? extends Packet>> packetTypeMap;
+    private final Map<Byte, Serializer> serializerMap;
+
+
+    private PacketCodeC() {
         packetTypeMap = new HashMap<>();
         packetTypeMap.put(LOGIN_REQUEST, LoginRequestPacket.class);
+        packetTypeMap.put(LOGIN_RESPONSE, LoginResponsePacket.class);
 
         serializerMap = new HashMap<>();
         Serializer serializer = new JSONSerializer();
@@ -33,9 +40,9 @@ public class PacketCodeC {
     /**
      * 编码
      */
-    public ByteBuf encode(Packet packet) {
+    public ByteBuf encode(ByteBufAllocator byteBufAllocator, Packet packet) {
         // 1. 创建 ByteBuf 对象
-        ByteBuf byteBuf = ByteBufAllocator.DEFAULT.ioBuffer();
+        ByteBuf byteBuf = byteBufAllocator.ioBuffer();
         // 2. 序列化 java 对象
         byte[] bytes = Serializer.DEFAULT.serialize(packet);
         // 3. 实际编码过程
@@ -45,6 +52,7 @@ public class PacketCodeC {
         byteBuf.writeByte(packet.getCommand());
         byteBuf.writeInt(bytes.length);
         byteBuf.writeBytes(bytes);
+
         return byteBuf;
     }
 
@@ -72,6 +80,7 @@ public class PacketCodeC {
         if (requestType != null && serializer != null) {
             return serializer.deserialize(requestType, bytes);
         }
+
         return null;
     }
 
@@ -82,5 +91,4 @@ public class PacketCodeC {
     private Class<? extends Packet> getRequestType(byte command) {
         return packetTypeMap.get(command);
     }
-
 }

@@ -1,4 +1,4 @@
-package com.demo.netty.protocol.command;
+package com.demo.netty.protocol;
 
 import com.alibaba.fastjson.annotation.JSONField;
 import lombok.Data;
