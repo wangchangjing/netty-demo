@@ -1,7 +1,9 @@
 package com.demo.netty.protocol;
 
 import com.demo.netty.protocol.request.LoginRequestPacket;
+import com.demo.netty.protocol.request.MessageRequestPacket;
 import com.demo.netty.protocol.response.LoginResponsePacket;
+import com.demo.netty.protocol.response.MessageResponsePacket;
 import com.demo.netty.serialize.Serializer;
 import com.demo.netty.serialize.impl.JSONSerializer;
 import io.netty.buffer.ByteBuf;
@@ -12,6 +14,8 @@ import java.util.Map;
 
 import static com.demo.netty.protocol.command.Command.LOGIN_REQUEST;
 import static com.demo.netty.protocol.command.Command.LOGIN_RESPONSE;
+import static com.demo.netty.protocol.command.Command.MESSAGE_REQUEST;
+import static com.demo.netty.protocol.command.Command.MESSAGE_RESPONSE;
 
 /**
  * @author WangChangJing
@@ -31,6 +35,8 @@ public class PacketCodeC {
         packetTypeMap = new HashMap<>();
         packetTypeMap.put(LOGIN_REQUEST, LoginRequestPacket.class);
         packetTypeMap.put(LOGIN_RESPONSE, LoginResponsePacket.class);
+        packetTypeMap.put(MESSAGE_REQUEST, MessageRequestPacket.class);
+        packetTypeMap.put(MESSAGE_RESPONSE, MessageResponsePacket.class);
 
         serializerMap = new HashMap<>();
         Serializer serializer = new JSONSerializer();
