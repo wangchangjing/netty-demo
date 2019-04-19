@@ -1,17 +1,20 @@
 package com.demo.netty.protocol;
 
 import com.demo.netty.protocol.request.LoginRequestPacket;
+import com.demo.netty.protocol.request.MessageRequestPacket;
 import com.demo.netty.protocol.response.LoginResponsePacket;
+import com.demo.netty.protocol.response.MessageResponsePacket;
 import com.demo.netty.serialize.Serializer;
 import com.demo.netty.serialize.impl.JSONSerializer;
 import io.netty.buffer.ByteBuf;
-import io.netty.buffer.ByteBufAllocator;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import static com.demo.netty.protocol.command.Command.LOGIN_REQUEST;
 import static com.demo.netty.protocol.command.Command.LOGIN_RESPONSE;
+import static com.demo.netty.protocol.command.Command.MESSAGE_REQUEST;
+import static com.demo.netty.protocol.command.Command.MESSAGE_RESPONSE;
 
 /**
  * @author WangChangJing
@@ -31,6 +34,8 @@ public class PacketCodeC {
         packetTypeMap = new HashMap<>();
         packetTypeMap.put(LOGIN_REQUEST, LoginRequestPacket.class);
         packetTypeMap.put(LOGIN_RESPONSE, LoginResponsePacket.class);
+        packetTypeMap.put(MESSAGE_REQUEST, MessageRequestPacket.class);
+        packetTypeMap.put(MESSAGE_RESPONSE, MessageResponsePacket.class);
 
         serializerMap = new HashMap<>();
         Serializer serializer = new JSONSerializer();
@@ -40,20 +45,17 @@ public class PacketCodeC {
     /**
      * 编码
      */
-    public ByteBuf encode(ByteBufAllocator byteBufAllocator, Packet packet) {
-        // 1. 创建 ByteBuf 对象
-        ByteBuf byteBuf = byteBufAllocator.ioBuffer();
-        // 2. 序列化 java 对象
+    public void encode(ByteBuf byteBuf, Packet packet) {
+        // 1. 序列化 java 对象
         byte[] bytes = Serializer.DEFAULT.serialize(packet);
-        // 3. 实际编码过程
+
+        // 2. 实际编码过程
         byteBuf.writeInt(MAGIC_NUMBER);
         byteBuf.writeByte(packet.getVersion());
         byteBuf.writeByte(Serializer.DEFAULT.getSerializerAlogrithm());
         byteBuf.writeByte(packet.getCommand());
         byteBuf.writeInt(bytes.length);
         byteBuf.writeBytes(bytes);
-
-        return byteBuf;
     }
 
     /**
@@ -70,7 +72,6 @@ public class PacketCodeC {
         byte command = byteBuf.readByte();
         // 数据包长度
         int length = byteBuf.readInt();
-        // 数据内容
         byte[] bytes = new byte[length];
         byteBuf.readBytes(bytes);
 
@@ -80,7 +81,6 @@ public class PacketCodeC {
         if (requestType != null && serializer != null) {
             return serializer.deserialize(requestType, bytes);
         }
-
         return null;
     }
 
