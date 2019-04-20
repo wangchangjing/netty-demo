@@ -1,6 +1,5 @@
 package com.demo.netty.client;
 
-import com.demo.netty.client.handler.FirstClientHandler;
 import com.demo.netty.client.handler.LoginResponseHandler;
 import com.demo.netty.client.handler.MessageResponseHandler;
 import com.demo.netty.codec.PacketDecoder;
@@ -45,7 +44,6 @@ public class NettyClient {
                 .handler(new ChannelInitializer<SocketChannel>() {
                     @Override
                     public void initChannel(SocketChannel ch) {
-//                        ch.pipeline().addLast(new FirstClientHandler());
                         ch.pipeline().addLast(new Spliter());
                         ch.pipeline().addLast(new PacketDecoder());
                         ch.pipeline().addLast(new LoginResponseHandler());
