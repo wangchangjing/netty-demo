@@ -1,9 +1,11 @@
 package com.demo.netty.client;
 
+import com.demo.netty.client.handler.FirstClientHandler;
 import com.demo.netty.client.handler.LoginResponseHandler;
 import com.demo.netty.client.handler.MessageResponseHandler;
 import com.demo.netty.codec.PacketDecoder;
 import com.demo.netty.codec.PacketEncoder;
+import com.demo.netty.codec.Spliter;
 import com.demo.netty.protocol.request.MessageRequestPacket;
 import com.demo.netty.util.LoginUtil;
 import io.netty.bootstrap.Bootstrap;
@@ -43,6 +45,8 @@ public class NettyClient {
                 .handler(new ChannelInitializer<SocketChannel>() {
                     @Override
                     public void initChannel(SocketChannel ch) {
+//                        ch.pipeline().addLast(new FirstClientHandler());
+                        ch.pipeline().addLast(new Spliter());
                         ch.pipeline().addLast(new PacketDecoder());
                         ch.pipeline().addLast(new LoginResponseHandler());
                         ch.pipeline().addLast(new MessageResponseHandler());
