@@ -3,7 +3,7 @@ package com.demo.netty.server;
 import com.demo.netty.codec.PacketDecoder;
 import com.demo.netty.codec.PacketEncoder;
 import com.demo.netty.codec.Spliter;
-import com.demo.netty.server.handler.LifeCyCleTestHandler;
+import com.demo.netty.server.handler.AuthHandler;
 import com.demo.netty.server.handler.LoginRequestHandler;
 import com.demo.netty.server.handler.MessageRequestHandler;
 import io.netty.bootstrap.ServerBootstrap;
@@ -38,9 +38,9 @@ public class NettyServer {
                 .childHandler(new ChannelInitializer<NioSocketChannel>() {
                     protected void initChannel(NioSocketChannel ch) {
                         ch.pipeline().addLast(new Spliter());
-                        ch.pipeline().addLast(new LifeCyCleTestHandler());
                         ch.pipeline().addLast(new PacketDecoder());
                         ch.pipeline().addLast(new LoginRequestHandler());
+                        ch.pipeline().addLast(new AuthHandler());
                         ch.pipeline().addLast(new MessageRequestHandler());
                         ch.pipeline().addLast(new PacketEncoder());
                     }
