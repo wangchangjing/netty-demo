@@ -18,7 +18,6 @@ public class LoginRequestPacket extends Packet {
 
     @Override
     public Byte getCommand() {
-
         return LOGIN_REQUEST;
     }
 }
