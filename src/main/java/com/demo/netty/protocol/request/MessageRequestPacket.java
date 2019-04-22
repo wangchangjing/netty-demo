@@ -1,9 +1,10 @@
 package com.demo.netty.protocol.request;
 
 import com.demo.netty.protocol.Packet;
-import com.demo.netty.protocol.command.Command;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import static com.demo.netty.protocol.command.Command.MESSAGE_REQUEST;
 
 /**
  * @author WangChangJing
@@ -13,15 +14,16 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 public class MessageRequestPacket extends Packet {
-
+    private String toUserId;
     private String message;
 
-    public MessageRequestPacket(String message) {
+    public MessageRequestPacket(String toUserId, String message) {
+        this.toUserId = toUserId;
         this.message = message;
     }
 
     @Override
     public Byte getCommand() {
-        return Command.MESSAGE_REQUEST;
+        return MESSAGE_REQUEST;
     }
 }

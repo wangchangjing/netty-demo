@@ -1,5 +1,6 @@
 package com.demo.netty.attribute;
 
+import com.demo.netty.session.Session;
 import io.netty.util.AttributeKey;
 
 /**
@@ -8,5 +9,5 @@ import io.netty.util.AttributeKey;
  * @date 2019/4/8
  */
 public interface Attributes {
-    AttributeKey<Boolean> LOGIN = AttributeKey.newInstance("login");
+    AttributeKey<Session> SESSION = AttributeKey.newInstance("session");
 }

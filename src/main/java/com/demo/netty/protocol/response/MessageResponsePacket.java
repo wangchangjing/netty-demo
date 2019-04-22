@@ -1,8 +1,9 @@
 package com.demo.netty.protocol.response;
 
 import com.demo.netty.protocol.Packet;
-import com.demo.netty.protocol.command.Command;
 import lombok.Data;
+
+import static com.demo.netty.protocol.command.Command.MESSAGE_RESPONSE;
 
 /**
  * @author WangChangJing
@@ -12,10 +13,15 @@ import lombok.Data;
 @Data
 public class MessageResponsePacket extends Packet {
 
+    private String fromUserId;
+
+    private String fromUserName;
+
     private String message;
 
     @Override
     public Byte getCommand() {
-        return Command.MESSAGE_RESPONSE;
+
+        return MESSAGE_RESPONSE;
     }
 }
