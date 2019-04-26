@@ -3,6 +3,7 @@ package com.demo.netty.client;
 import com.demo.netty.client.console.ConsoleCommandManager;
 import com.demo.netty.client.console.LoginConsoleCommand;
 import com.demo.netty.client.handler.CreateGroupResponseHandler;
+import com.demo.netty.client.handler.GroupMessageResponseHandler;
 import com.demo.netty.client.handler.JoinGroupResponseHandler;
 import com.demo.netty.client.handler.ListGroupMembersResponseHandler;
 import com.demo.netty.client.handler.LoginResponseHandler;
@@ -64,6 +65,8 @@ public class NettyClient {
                         ch.pipeline().addLast(new QuitGroupResponseHandler());
                         // 获取群成员响应处理器
                         ch.pipeline().addLast(new ListGroupMembersResponseHandler());
+                        // 群聊响应处理器
+                        ch.pipeline().addLast(new GroupMessageResponseHandler());
                         // 登出响应处理器
                         ch.pipeline().addLast(new LogoutResponseHandler());
                         ch.pipeline().addLast(new PacketEncoder());
