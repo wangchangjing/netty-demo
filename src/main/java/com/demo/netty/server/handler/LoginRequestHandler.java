@@ -4,6 +4,7 @@ import com.demo.netty.protocol.request.LoginRequestPacket;
 import com.demo.netty.protocol.response.LoginResponsePacket;
 import com.demo.netty.session.Session;
 import com.demo.netty.util.SessionUtil;
+import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 
@@ -15,7 +16,13 @@ import java.util.UUID;
  * @description:
  * @date 2019/4/8
  */
+@ChannelHandler.Sharable
 public class LoginRequestHandler extends SimpleChannelInboundHandler<LoginRequestPacket> {
+
+    public static final LoginRequestHandler INSTANCE = new LoginRequestHandler();
+
+    protected LoginRequestHandler() {
+    }
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, LoginRequestPacket loginRequestPacket) {
@@ -36,7 +43,7 @@ public class LoginRequestHandler extends SimpleChannelInboundHandler<LoginReques
         }
 
         // 登录响应
-        ctx.channel().writeAndFlush(loginResponsePacket);
+        ctx.writeAndFlush(loginResponsePacket);
     }
 
     private boolean valid(LoginRequestPacket loginRequestPacket) {
