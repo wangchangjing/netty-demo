@@ -4,6 +4,7 @@ import com.demo.netty.client.console.ConsoleCommandManager;
 import com.demo.netty.client.console.LoginConsoleCommand;
 import com.demo.netty.client.handler.CreateGroupResponseHandler;
 import com.demo.netty.client.handler.GroupMessageResponseHandler;
+import com.demo.netty.client.handler.HeartBeatTimerHandler;
 import com.demo.netty.client.handler.JoinGroupResponseHandler;
 import com.demo.netty.client.handler.ListGroupMembersResponseHandler;
 import com.demo.netty.client.handler.LoginResponseHandler;
@@ -13,6 +14,7 @@ import com.demo.netty.client.handler.QuitGroupResponseHandler;
 import com.demo.netty.codec.PacketDecoder;
 import com.demo.netty.codec.PacketEncoder;
 import com.demo.netty.codec.Spliter;
+import com.demo.netty.handler.IMIdleStateHandler;
 import com.demo.netty.util.SessionUtil;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
@@ -51,6 +53,8 @@ public class NettyClient {
                 .handler(new ChannelInitializer<SocketChannel>() {
                     @Override
                     public void initChannel(SocketChannel ch) {
+                        // 空闲检测
+                        ch.pipeline().addLast(new IMIdleStateHandler());
                         ch.pipeline().addLast(new Spliter());
                         ch.pipeline().addLast(new PacketDecoder());
                         // 登录响应处理器
@@ -70,6 +74,8 @@ public class NettyClient {
                         // 登出响应处理器
                         ch.pipeline().addLast(new LogoutResponseHandler());
                         ch.pipeline().addLast(new PacketEncoder());
+                        // 心跳定时器
+                        ch.pipeline().addLast(new HeartBeatTimerHandler());
                     }
                 });
 

@@ -2,6 +2,7 @@ package com.demo.netty.protocol;
 
 import com.demo.netty.protocol.request.CreateGroupRequestPacket;
 import com.demo.netty.protocol.request.GroupMessageRequestPacket;
+import com.demo.netty.protocol.request.HeartBeatRequestPacket;
 import com.demo.netty.protocol.request.JoinGroupRequestPacket;
 import com.demo.netty.protocol.request.ListGroupMembersRequestPacket;
 import com.demo.netty.protocol.request.LoginRequestPacket;
@@ -10,6 +11,7 @@ import com.demo.netty.protocol.request.MessageRequestPacket;
 import com.demo.netty.protocol.request.QuitGroupRequestPacket;
 import com.demo.netty.protocol.response.CreateGroupResponsePacket;
 import com.demo.netty.protocol.response.GroupMessageResponsePacket;
+import com.demo.netty.protocol.response.HeartBeatResponsePacket;
 import com.demo.netty.protocol.response.JoinGroupResponsePacket;
 import com.demo.netty.protocol.response.ListGroupMembersResponsePacket;
 import com.demo.netty.protocol.response.LoginResponsePacket;
@@ -57,6 +59,8 @@ public class PacketCodeC {
         packetTypeMap.put(LIST_GROUP_MEMBERS_RESPONSE, ListGroupMembersResponsePacket.class);
         packetTypeMap.put(GROUP_MESSAGE_REQUEST, GroupMessageRequestPacket.class);
         packetTypeMap.put(GROUP_MESSAGE_RESPONSE, GroupMessageResponsePacket.class);
+        packetTypeMap.put(HEARTBEAT_REQUEST, HeartBeatRequestPacket.class);
+        packetTypeMap.put(HEARTBEAT_RESPONSE, HeartBeatResponsePacket.class);
 
         serializerMap = new HashMap<>();
         Serializer serializer = new JSONSerializer();

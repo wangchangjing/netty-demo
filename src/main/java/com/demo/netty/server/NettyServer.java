@@ -2,7 +2,9 @@ package com.demo.netty.server;
 
 import com.demo.netty.codec.PacketCodecHandler;
 import com.demo.netty.codec.Spliter;
+import com.demo.netty.handler.IMIdleStateHandler;
 import com.demo.netty.server.handler.AuthHandler;
+import com.demo.netty.server.handler.HeartBeatRequestHandler;
 import com.demo.netty.server.handler.IMHandler;
 import com.demo.netty.server.handler.LoginRequestHandler;
 import io.netty.bootstrap.ServerBootstrap;
@@ -36,9 +38,12 @@ public class NettyServer {
                 .childOption(ChannelOption.TCP_NODELAY, true)
                 .childHandler(new ChannelInitializer<NioSocketChannel>() {
                     protected void initChannel(NioSocketChannel ch) {
+                        // 空闲检测
+                        ch.pipeline().addLast(new IMIdleStateHandler());
                         ch.pipeline().addLast(new Spliter());
                         ch.pipeline().addLast(PacketCodecHandler.INSTANCE);
                         ch.pipeline().addLast(LoginRequestHandler.INSTANCE);
+                        ch.pipeline().addLast(HeartBeatRequestHandler.INSTANCE);
                         ch.pipeline().addLast(AuthHandler.INSTANCE);
                         ch.pipeline().addLast(IMHandler.INSTANCE);
                     }
